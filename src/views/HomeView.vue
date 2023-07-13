@@ -1,18 +1,36 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
-  </div>
+  <AuthLayout>
+    <main class="main">
+      {{JSON.stringify(email)}}
+      <GreateUser :username="username"/>
+    </main>
+  </AuthLayout>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+<script setup lang="ts">
+import GreateUser from "@/widgets/GreateUser.vue";
+import {computed, onBeforeUnmount} from "vue";
+import {useStore} from "vuex";
+import {useRoute, useRouter} from "vue-router";
+import AuthLayout from "@/layout/AuthLayout.vue";
 
-export default defineComponent({
-  name: 'HomeView',
-  components: {
-    HelloWorld,
-  },
-});
+const router = useRouter()
+const store = useStore()
+
+const username = computed(() => {
+  const localDb = localStorage.getItem('user')
+  if(localDb) {
+    return JSON.parse(localDb).username
+  }
+})
 </script>
+
+<style lang="scss">
+  .main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+</style>
