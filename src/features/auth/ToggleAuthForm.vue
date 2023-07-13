@@ -30,9 +30,16 @@ function toggleIndex(index: number) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .tabs {
     display: flex;
     justify-content: space-around;
+  }
+  .tab {
+    color: rgba(145, 156, 166, 0.65);
+    cursor: pointer;
+    &_active {
+      color: #1e395d;
+    }
   }
 </style>

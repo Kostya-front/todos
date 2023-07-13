@@ -1,11 +1,12 @@
 import {ActionContext} from "vuex";
-import store from "@/store";
+import {validateForm} from "@/shared/helpers/validateForm";
 
 export interface ITaskStore {
   tasksDb: ITask []
   taskList: ITask []
   tabTitle: string
   task: ITask
+  error: string
 }
 
 export interface ITask {
@@ -37,7 +38,8 @@ export const taskStore = {
       userEmail: ''
     },
     taskList: [],
-    tabTitle: 'Все задачи'
+    tabTitle: 'Все задачи',
+    error: ''
   }),
 
   actions: {
@@ -89,43 +91,56 @@ export const taskStore = {
           return state.taskList = state.tasksDb
       }
     },
+
     selectTask(state: ITaskStore, taskTitle: string) {
-      state.tasksDb.forEach(task => {
-        if(task.title === taskTitle) {
-          task.isSelected = true
-        }
-      })
+      const task = state.tasksDb.find(item => item.title === taskTitle)
+
+      if(task) {
+        task.isSelected = true
+      }
       state.taskList = state.tasksDb
 
       saveTasksInLocalStorage(state.tasksDb, 'tasks')
     },
+
     removeFromSelected(state: ITaskStore, taskTitle: string) {
-      state.tasksDb.forEach(task => {
-        task.title === taskTitle ? task.isSelected = false : null
-      })
+      const task = state.tasksDb.find(item => item.title === taskTitle)
 
+      if(task) {
+        task.isSelected = false
+      }
       state.taskList = state.tasksDb
 
       saveTasksInLocalStorage(state.tasksDb, 'tasks')
     },
+
     getAllTasks(state: ITaskStore) {
       state.taskList = state.tasksDb
     },
+
     createTask(state: ITaskStore, task: ITask) {
-      state.tasksDb.push(task)
-      saveTasksInLocalStorage(state.tasksDb, 'tasks')
+      try {
+        validateForm([task.title, task.description])
+        state.tasksDb.push(task)
+        state.error = ''
+        saveTasksInLocalStorage(state.tasksDb, 'tasks')
+      } catch (e: Error | any) {
+        state.error = e.message
+      }
     },
+
     deleteTask(state: ITaskStore, taskTitle: string) {
       state.tasksDb = state.tasksDb.filter(task => task.title !== taskTitle)
       state.taskList = state.tasksDb
       saveTasksInLocalStorage(state.tasksDb, 'tasks')
     },
+
      completeTask(state: ITaskStore, taskTitle: string) {
-      state.tasksDb.forEach(task => {
-        if(task.title === taskTitle) {
-          task.isComplete = !task.isComplete
-        }
-      })
+      const task = state.tasksDb.find(item => item.title === taskTitle)
+
+      if(task) {
+        task.isComplete = !task.isComplete
+      }
       state.taskList = state.tasksDb
 
       saveTasksInLocalStorage(state.tasksDb, 'tasks')
@@ -139,18 +154,18 @@ export const taskStore = {
     },
 
     editTask(state: ITaskStore, task: ITask) {
-      state.tasksDb.forEach(item => {
-        if(item.title === state.task.title) {
-          item.title = task.title
-          item.description = task.description
-        }
-      })
+      const foundTask = state.tasksDb.find(item => item.title === state.task.title)
+
+      if(foundTask) {
+        foundTask.title = task.title
+        foundTask.description = task.description
+      }
 
       saveTasksInLocalStorage(state.tasksDb, 'tasks')
     }
   },
+
   getters: {
-    selectedTasks:(state: ITaskStore) => state.tasksDb.filter(task => task.isSelected),
     tasks: (state: ITaskStore) => state.taskList,
     task: (state: ITaskStore) => state.task,
     tabTitle: (state: ITaskStore) => state.tabTitle

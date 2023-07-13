@@ -92,9 +92,9 @@ export const authStore = {
 
     login(state: IAuthState, userDate: IUser) {
       try {
-        const foundedUser = state.users.find(user => user.email === userDate.email)
-
         validateForm([userDate.email, userDate.password])
+
+        const foundedUser = state.users.find(user => user.email === userDate.email)
 
         if(!foundedUser) {
           throw new Error('Пользователь не найден')
@@ -129,7 +129,6 @@ export const authStore = {
         const store = JSON.parse(stateSting)
         state.users = store.users
         state.isAuth = store.isAuth
-        console.log(state)
       }
       if(userStateString) {
         const store = JSON.parse(userStateString)
@@ -160,7 +159,6 @@ export const authStore = {
       if(localState) {
         const stateUpdated = JSON.parse(localState)
         stateUpdated.isAuth = false
-        console.log(stateUpdated)
         localStorage.setItem('authState', JSON.stringify(stateUpdated))
       }
     }

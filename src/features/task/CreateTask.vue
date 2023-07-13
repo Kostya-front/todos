@@ -3,6 +3,7 @@
     <InputUi v-model="title" :is-focused="title" placeholder="Название задачи"/>
     <TextAreaUi v-model="description" :is-focused="description" placeholder="Описание"/>
     <ButtonUi name="Создать"/>
+    <p v-if="error" class="text-middle">{{error}}</p>
   </form>
 </template>
 
@@ -10,7 +11,7 @@
 import InputUi from "@/shared/ui/InputUi";
 import TextAreaUi from "@/shared/ui/TextAreaUi";
 import ButtonUi from "@/shared/ui/ButtonUi";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {Store, useStore} from "vuex";
 import {IRootState} from "@/store";
 import {ITaskStore} from "@/features/task/taskStore";
@@ -34,6 +35,10 @@ function createTask() {
   title.value = ''
   description.value = ''
 }
+
+const error = computed(() => {
+  return taskStore.error
+})
 </script>
 
 <style lang="scss" scoped>
